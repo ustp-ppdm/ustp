@@ -27,14 +27,33 @@
         <div class="brand-name">Master Portal</div>
         <div class="brand-sub">Dashboard Utama</div>
       </div>
+      <!-- Added Tukar Akaun button to header -->
       <div class="user-chip" id="userProfile" style="display:none;">
         <div class="user-info">
           <p class="user-name" id="userName"></p>
           <p class="user-email" id="userEmail"></p>
         </div>
+        <a id="switchBtn" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; margin-left: 10px;">Tukar Akaun</a>
       </div>
     </div>
   </header>
+
+  <div class="shell">
+    <div id="authView" class="panel hero-block">
+      <h2 class="hero-title">Selamat Datang</h2>
+      <p class="hero-sub">Sila sahkan identiti anda untuk mengakses modul.</p>
+      <div class="input-group">
+        <input type="password" id="pinInput" class="form-control" placeholder="Masukkan PIN Sekolah (Jika tiada akses e-mel)">
+        <button class="btn btn-primary" onclick="verifyAccess()">Log Masuk</button>
+      </div>
+      <p id="authError" style="color:var(--rose); font-size:13px; margin-top:12px;"></p>
+      
+      <!-- Added Fallback Login/Switch Action for blocked requests -->
+      <div id="googleAuthAction" style="display:none; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line-soft);">
+        <p style="font-size:13px; color:var(--muted); margin-bottom: 10px;">Jika data gagal dimuat turun atau disekat oleh sistem:</p>
+        <a id="forceLoginBtn" class="btn btn-secondary">Log Masuk / Tukar Akaun Google</a>
+      </div>
+    </div>
 
   <div class="shell">
     <div id="authView" class="panel hero-block">

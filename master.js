@@ -32,15 +32,26 @@ async function verifyAccess(pin = null) {
   const data = await fetchAPI('checkAccess', { pin: pin });
   hideLoader();
 
-  if (data.status === 'error') {
-    document.getElementById('authError').innerText = data.error;
+  // Create a logout URL that redirects back to this exact GitHub page[cite: 2]
+  const currentUrl = window.location.href.split('?')[0];
+  const switchAccountUrl = 'https://accounts.google.com/Logout?continue=' + encodeURIComponent('https://appengine.google.com/_ah/logout?continue=' + encodeURIComponent(currentUrl));
+
+  // If fetch failed (CORS error, not logged in, or DELIMa block)
+  if (data.status === 'error' || data.error === 'Failed to fetch') {
+    document.getElementById('authError').innerText = "Ralat capaian. Pastikan anda menggunakan akaun DELIMa atau klik butang di bawah.";
+    document.getElementById('googleAuthAction').style.display = 'block';
+    document.getElementById('forceLoginBtn').href = switchAccountUrl;
     return;
   }
 
-  // Update Header
+  // Hide the fallback auth button on success
+  document.getElementById('googleAuthAction').style.display = 'none';
+
+  // Update Header UI with user details and assign the Switch Account link[cite: 2]
   document.getElementById('userProfile').style.display = 'flex';
   document.getElementById('userName').innerText = data.user.name;
   document.getElementById('userEmail').innerText = data.user.email || 'Akses via PIN';
+  document.getElementById('switchBtn').href = switchAccountUrl;
 
   // Save auth state for modules to read
   localStorage.setItem('dashboard_auth', JSON.stringify(data));
