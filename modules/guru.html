@@ -1,26 +1,173 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Modul Guru — USTP PPD Meradong</title>
-  <link rel="stylesheet" href="../css/style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modul Guru - Sistem Baucar Buku</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/guru.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <h1>Modul Guru</h1>
+
+  <div id="dynamicLoader">
+    <div class="loader-mark">📖</div>
+    <div class="loader-track"><span></span></div>
+    <div class="loading-title">Sistem Baucar Buku</div>
+    <div class="loading-subtitle" id="loaderMessage">Memulakan sistem...</div>
+  </div>
+
+  <section class="module-toolbar">
+    <a class="return-button" href="../index.html">
+      <span aria-hidden="true">←</span>
+      <span>Kembali ke Dashboard</span>
+    </a>
+  </section>
+
+  <div class="shell">
+    <div id="errorView" class="panel" style="display:none;">
+      <h3>Ralat Sistem</h3>
+      <p id="errorMsg"></p>
+      <button class="btn" onclick="checkUserAccess()">Cuba Semula</button>
     </div>
-  </header>
 
-  <main class="container module-area">
-    <h2>Modul Guru</h2>
-    <p>Ini adalah halaman placeholder untuk Modul Guru. Kandungan modul akan ditambah kemudian.</p>
-    <p><a href="../index.html">Kembali ke Dashboard</a></p>
-  </main>
+    <div id="landingView" class="panel hero-block" style="display:none;">
+      <p class="eyebrow">Status Semasa</p>
+      <h2 class="hero-title" id="welcomeTitle">Status e-Baucar Buku</h2>
+      <p class="hero-sub" id="welcomeSubtitle">Status penebusan dan penggunaan baucar buku mengikut sekolah.</p>
 
-  <footer class="site-footer">
-    <div class="container">&copy; USTP PPD Meradong</div>
-  </footer>
+      <div id="publicSchoolContainer" style="display:none; text-align:left; margin-top:22px;">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Nama Sekolah</th>
+                <th>Jumlah Pelajar</th>
+                <th>Telah Ditebus (%)</th>
+                <th>Telah Diguna (%)</th>
+              </tr>
+            </thead>
+            <tbody id="publicSchoolBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="schoolMetrics" class="metrics-grid" style="display:none;">
+        <div class="metric-card">
+          <div class="metric-title">Jumlah Murid</div>
+          <div class="metric-value" id="valTotal">-</div>
+        </div>
+        <div class="metric-card gold">
+          <div class="metric-title">Sudah Tebus</div>
+          <div class="metric-value" id="valTebus">-</div>
+          <div class="metric-sub" id="subTebus"></div>
+          <div class="ledger-bar gold" id="barTebus"><span style="width:0%"></span></div>
+        </div>
+        <div class="metric-card teal">
+          <div class="metric-title">Sudah Guna</div>
+          <div class="metric-value" id="valGuna">-</div>
+          <div class="metric-sub" id="subGuna"></div>
+          <div class="ledger-bar teal" id="barGuna"><span style="width:0%"></span></div>
+        </div>
+      </div>
+
+      <div class="input-group" id="actionArea">
+        <input type="password" id="pinInput" class="form-control" placeholder="Pin Dashboard Sekolah">
+        <button class="btn btn-gold" id="btnMaklumat" onclick="handleMaklumatTerperinci()">Maklumat Terperinci</button>
+      </div>
+      <p id="pinError" style="color:var(--rose); font-size:12.5px; font-weight:600; margin-top:12px;"></p>
+    </div>
+
+    <div id="detailsView" style="display:none;">
+      <div class="panel">
+        <div class="filters-row">
+          <input type="text" id="searchNama" class="form-control" placeholder="Cari nama murid..." oninput="applyFilters()">
+          <select id="filterTingkatan" class="form-control" onchange="applyFilters()">
+            <option value="">Semua Tingkatan</option>
+          </select>
+        </div>
+        <div class="checks-row">
+          <label class="check-label"><input type="checkbox" id="chkBelumTebus" onchange="applyFilters()"> Belum Tebus</label>
+          <label class="check-label"><input type="checkbox" id="chkBelumGuna" onchange="applyFilters()"> Belum Guna</label>
+        </div>
+      </div>
+
+      <div class="panel" style="padding:0; overflow:hidden;">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nama Murid</th>
+                <th>Tingkatan</th>
+                <th>Status Tebus</th>
+                <th>Status Guna</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination-bar">
+          <span id="paginationInfo"></span>
+          <span id="paginationPage"></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="adminView" class="panel" style="display:none;">
+      <h2>Panel Pentadbir (Admin)</h2>
+      <div class="tab-header">
+        <div class="tab-btn active" onclick="switchAdminTab('senarai')">Senarai Sekolah</div>
+        <div class="tab-btn" onclick="switchAdminTab('tetapan')">Tetapan</div>
+      </div>
+
+      <div id="tab-senarai" class="tab-content active">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Nama Sekolah</th>
+                <th>Jumlah Pelajar</th>
+                <th>Telah Ditebus (%)</th>
+                <th>Telah Diguna (%)</th>
+              </tr>
+            </thead>
+            <tbody id="adminSchoolTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tab-tetapan" class="tab-content">
+        <div class="form-group">
+          <label>ID Data Baucar</label>
+          <input type="text" id="cfgVoucher" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>ID Data GPM</label>
+          <input type="text" id="cfgGpm" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>ID Data PIN</label>
+          <input type="text" id="cfgPin" class="form-control">
+        </div>
+        <button class="btn btn-gold" onclick="saveAdminConfigs()">Simpan ID Baharu</button>
+        <span id="adminMsg"></span>
+      </div>
+    </div>
+
+    <div id="adminSchoolDetailsContainer" style="display:none; margin-top:20px;">
+      <h3 id="adminSchoolTitle"></h3>
+      <div id="adminDetailsInjection"></div>
+    </div>
+  </div>
+
+  <!-- JavaScript Files -->
+  <script src="../js/api.js"></script>
+  <script src="../js/guru.js"></script>
 </body>
 </html>
