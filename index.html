@@ -1,96 +1,134 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Master Portal | Dashboard Pendidikan</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="master.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal USTP PPD Meradong</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <!-- JWT Decoder to read Google's response -->
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+
+    <!-- Custom Tailwind Configuration for USTP Theme (Blue/Professional) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ustp: {
+                            light: '#4facfe',
+                            DEFAULT: '#00f2fe',
+                            dark: '#0062cc',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
+<body class="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 min-h-screen flex items-center justify-center p-4 antialiased">
 
-  <!-- Reusable Loader -->
-  <div id="dynamicLoader">
-    <div class="loader-mark"></div>
-    <div class="loader-track"><span></span></div>
-    <div class="loading-text-container">
-      <div class="loading-title">Sistem Dashboard</div>
-      <div class="loading-subtitle" id="loaderMessage">Mengakses sistem...</div>
-    </div>
-  </div>
-
-  <header class="site-header">
-    <div class="site-header-inner">
-      <div class="brand">
-        <div class="brand-name">Master Portal</div>
-        <div class="brand-sub">Dashboard Utama</div>
-      </div>
-      <!-- Added Tukar Akaun button to header -->
-      <div class="user-chip" id="userProfile" style="display:none;">
-        <div class="user-info">
-          <p class="user-name" id="userName"></p>
-          <p class="user-email" id="userEmail"></p>
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden relative">
+        <!-- Top Banner/Header -->
+        <div class="bg-blue-50 py-8 px-6 text-center border-b border-gray-100">
+            <div class="w-16 h-16 mx-auto bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg mb-4 transform rotate-3">
+                <!-- SVG Icon representing Tech/Education -->
+                <svg class="w-8 h-8 text-white transform -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">USTP PPD Meradong</h1>
+            <p class="text-sm text-gray-500 mt-1 font-medium">Unit Sumber Teknologi Pendidikan</p>
         </div>
-        <a id="switchBtn" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; margin-left: 10px;">Tukar Akaun</a>
-      </div>
-    </div>
-  </header>
 
-  <div class="shell">
-    <div id="authView" class="panel hero-block">
-      <h2 class="hero-title">Selamat Datang</h2>
-      <p class="hero-sub">Sila sahkan identiti anda untuk mengakses modul.</p>
-      <div class="input-group">
-        <input type="password" id="pinInput" class="form-control" placeholder="Masukkan PIN Sekolah (Jika tiada akses e-mel)">
-        <button class="btn btn-primary" onclick="verifyAccess()">Log Masuk</button>
-      </div>
-      <p id="authError" style="color:var(--rose); font-size:13px; margin-top:12px;"></p>
-      
-      <!-- Added Fallback Login/Switch Action for blocked requests -->
-      <div id="googleAuthAction" style="display:none; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line-soft);">
-        <p style="font-size:13px; color:var(--muted); margin-bottom: 10px;">Jika data gagal dimuat turun atau disekat oleh sistem:</p>
-        <a id="forceLoginBtn" class="btn btn-secondary">Log Masuk / Tukar Akaun Google</a>
-      </div>
-    </div>
+        <div class="p-8">
+            <!-- State 1: Login Section -->
+            <div id="login-section" class="flex flex-col items-center transition-all duration-300">
+                <p class="text-center text-gray-600 text-sm mb-6">Sila log masuk menggunakan akaun Google/DELIMa anda untuk meneruskan.</p>
+                
+                <!-- Google Sign-In Button Container -->
+                <div id="buttonDiv" class="w-full flex justify-center"></div>
+            </div>
 
-  <div class="shell">
-    <div id="authView" class="panel hero-block">
-      <h2 class="hero-title">Selamat Datang</h2>
-      <p class="hero-sub">Sila sahkan identiti anda untuk mengakses modul.</p>
-      <div class="input-group">
-        <input type="password" id="pinInput" class="form-control" placeholder="Masukkan PIN Sekolah (Jika tiada akses e-mel)">
-        <button class="btn btn-primary" onclick="verifyAccess()">Log Masuk</button>
-      </div>
-      <p id="authError" style="color:var(--rose); font-size:13px; margin-top:12px;"></p>
-    </div>
+            <!-- State 2: User Profile Section (Hidden by default) -->
+            <div id="profile-section" class="hidden flex-col items-center transition-all duration-300">
+                <div class="relative mb-4">
+                    <img id="user-avatar" src="" alt="User Avatar" class="w-20 h-20 rounded-full border-4 border-blue-100 shadow-sm object-cover">
+                    <div class="absolute bottom-0 right-0 bg-green-500 w-5 h-5 rounded-full border-2 border-white"></div>
+                </div>
+                
+                <h2 id="user-name" class="text-xl font-bold text-gray-800 text-center"></h2>
+                <p id="user-email" class="text-sm text-gray-500 text-center bg-gray-100 px-3 py-1 rounded-full mt-2 font-mono"></p>
 
-    <!-- Modules Grid -->
-    <div id="modulesView" style="display:none;">
-      <h2 class="section-title">Modul Tersedia</h2>
-      <div class="modules-grid">
-        <!-- Module Card: Baucar Buku -->
-        <a href="baucarbuku.html" class="module-card">
-          <div class="module-icon">📚</div>
-          <div class="module-content">
-            <h3>Sistem Baucar Buku</h3>
-            <p>Urus status penebusan dan penggunaan baucar buku pelajar.</p>
-          </div>
-        </a>
+                <div class="w-full mt-8 pt-6 border-t border-gray-100 space-y-3">
+                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition duration-200 flex justify-center items-center gap-2">
+                        <span>Teruskan ke Dashboard</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
+                    
+                    <button onclick="switchAccount()" class="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-xl border border-gray-200 shadow-sm transition duration-200">
+                        Tukar Akaun (Switch Account)
+                    </button>
+                </div>
+            </div>
+        </div>
         
-        <!-- Placeholder for Future Module -->
-        <div class="module-card disabled">
-          <div class="module-icon">⚙️</div>
-          <div class="module-content">
-            <h3>Modul Seterusnya</h3>
-            <p>Akan datang...</p>
-          </div>
+        <!-- Footer -->
+        <div class="bg-gray-50 py-4 text-center">
+            <p class="text-xs text-gray-400">&copy; 2026 PPD Meradong. All rights reserved.</p>
         </div>
-      </div>
     </div>
-  </div>
 
-  <script src="master.js"></script>
+    <script>
+        // REPLACE THIS WITH YOUR GOOGLE CLIENT ID
+        const GOOGLE_CLIENT_ID = '301439264156-sslpt522c7t2hk7sjrb7u2fin8n3c0mb.apps.googleusercontent.com';
+
+        window.onload = function () {
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleCredentialResponse,
+                auto_select: false, // Prevents automatic sign-in without user interaction
+            });
+            
+            renderGoogleButton();
+        };
+
+        function renderGoogleButton() {
+            google.accounts.id.renderButton(
+                document.getElementById("buttonDiv"),
+                { theme: "outline", size: "large", type: "standard", shape: "pill", width: "250" }
+            );
+        }
+
+        function handleCredentialResponse(response) {
+            // Decode the JWT token to get user info
+            const decodedToken = jwt_decode(response.credential);
+            
+            // Populate the UI with user data
+            document.getElementById('user-name').innerText = decodedToken.name;
+            document.getElementById('user-email').innerText = decodedToken.email;
+            document.getElementById('user-avatar').src = decodedToken.picture;
+
+            // Toggle visibility
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('profile-section').classList.remove('hidden');
+            document.getElementById('profile-section').classList.add('flex');
+        }
+
+        function switchAccount() {
+            // Hide profile, show login
+            document.getElementById('profile-section').classList.add('hidden');
+            document.getElementById('profile-section').classList.remove('flex');
+            document.getElementById('login-section').classList.remove('hidden');
+            
+            // Re-render the button and force the account chooser prompt
+            google.accounts.id.prompt(); 
+        }
+    </script>
 </body>
 </html>
