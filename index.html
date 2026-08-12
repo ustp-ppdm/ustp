@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal USTP PPD Meradong</title>
     
-    <!-- Tailwind CSS for styling -->
+    <!-- Tailwind CSS untuk styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     
-    <!-- JWT Decoder to read Google's response -->
+    <!-- JWT Decoder untuk membaca respons dari Google -->
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
-    <!-- Custom Tailwind Configuration for USTP Theme (Blue/Professional) -->
+    <!-- Konfigurasi Tailwind untuk Tema USTP -->
     <script>
         tailwind.config = {
             theme: {
@@ -34,43 +34,55 @@
 <body class="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 min-h-screen flex items-center justify-center p-4 antialiased">
 
     <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden relative">
-        <!-- Top Banner/Header -->
+        <!-- Header / Banner Atas -->
         <div class="bg-blue-50 py-8 px-6 text-center border-b border-gray-100">
             <div class="w-16 h-16 mx-auto bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg mb-4 transform rotate-3">
-                <!-- SVG Icon representing Tech/Education -->
+                <!-- Ikon Pendidikan/Teknologi -->
                 <svg class="w-8 h-8 text-white transform -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                 </svg>
             </div>
             <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">USTP PPD Meradong</h1>
-            <p class="text-sm text-gray-500 mt-1 font-medium">Unit Sumber Teknologi Pendidikan</p>
+            <p class="text-sm text-gray-500 mt-1 font-medium">Unit Sumber Dan Teknologi Pendidikan</p>
         </div>
 
         <div class="p-8">
-            <!-- State 1: Login Section -->
+            <!-- State 1: Bahagian Log Masuk -->
             <div id="login-section" class="flex flex-col items-center transition-all duration-300">
-                <p class="text-center text-gray-600 text-sm mb-6">Sila log masuk menggunakan akaun Google/DELIMa anda untuk meneruskan.</p>
+                <p class="text-center text-gray-600 font-medium mb-6">Sila log masuk guna akaun DELIMa</p>
                 
-                <!-- Google Sign-In Button Container -->
+                <!-- Bekas Butang Log Masuk Google -->
                 <div id="buttonDiv" class="w-full flex justify-center"></div>
             </div>
 
-            <!-- State 2: User Profile Section (Hidden by default) -->
+            <!-- State 2: Bahagian Profil & Pengesahan (Disembunyikan pada awalnya) -->
             <div id="profile-section" class="hidden flex-col items-center transition-all duration-300">
                 <div class="relative mb-4">
                     <img id="user-avatar" src="" alt="User Avatar" class="w-20 h-20 rounded-full border-4 border-blue-100 shadow-sm object-cover">
-                    <div class="absolute bottom-0 right-0 bg-green-500 w-5 h-5 rounded-full border-2 border-white"></div>
+                    <!-- Dot status akan ditukar berdasarkan jenis akaun -->
+                    <div id="status-dot" class="absolute bottom-0 right-0 w-5 h-5 rounded-full border-2 border-white"></div>
                 </div>
                 
                 <h2 id="user-name" class="text-xl font-bold text-gray-800 text-center"></h2>
                 <p id="user-email" class="text-sm text-gray-500 text-center bg-gray-100 px-3 py-1 rounded-full mt-2 font-mono"></p>
 
-                <div class="w-full mt-8 pt-6 border-t border-gray-100 space-y-3">
-                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition duration-200 flex justify-center items-center gap-2">
-                        <span>Teruskan ke Dashboard</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </button>
-                    
+                <!-- Mesej Berjaya (Auto Redirect) -->
+                <div id="success-message" class="hidden w-full mt-6 text-center">
+                    <div class="flex items-center justify-center space-x-2 text-green-600 bg-green-50 py-3 px-4 rounded-xl border border-green-100">
+                        <svg class="animate-spin h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="font-semibold text-sm">Membawa anda ke Dashboard...</span>
+                    </div>
+                </div>
+
+                <!-- Mesej Ralat (Bukan Akaun DELIMa) -->
+                <div id="error-message" class="hidden w-full mt-6 space-y-3">
+                    <div class="text-center text-red-600 bg-red-50 py-3 px-4 rounded-xl border border-red-100">
+                        <span class="font-semibold text-sm block">Akses Ditolak</span>
+                        <span class="text-xs">Sila guna akaun rasmi @moe-dl.edu.my sahaja.</span>
+                    </div>
                     <button onclick="switchAccount()" class="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-xl border border-gray-200 shadow-sm transition duration-200">
                         Tukar Akaun (Switch Account)
                     </button>
@@ -79,20 +91,23 @@
         </div>
         
         <!-- Footer -->
-        <div class="bg-gray-50 py-4 text-center">
-            <p class="text-xs text-gray-400">&copy; 2026 PPD Meradong. All rights reserved.</p>
+        <div class="bg-gray-50 py-4 text-center border-t border-gray-100">
+            <p class="text-xs text-gray-400">&copy; 2026 PPD Meradong. Hak Cipta Terpelihara.</p>
         </div>
     </div>
 
     <script>
-        // REPLACE THIS WITH YOUR GOOGLE CLIENT ID
+        // Client ID yang anda berikan
         const GOOGLE_CLIENT_ID = '301439264156-sslpt522c7t2hk7sjrb7u2fin8n3c0mb.apps.googleusercontent.com';
+
+        // URL Dashboard Utama (GANTI "#" DENGAN PAUTAN DASHBOARD SEBENAR ANDA)
+        const DASHBOARD_URL = 'https://sites.google.com/moe-dl.edu.my/ustp-ppdm/home'; 
 
         window.onload = function () {
             google.accounts.id.initialize({
                 client_id: GOOGLE_CLIENT_ID,
                 callback: handleCredentialResponse,
-                auto_select: false, // Prevents automatic sign-in without user interaction
+                auto_select: false,
             });
             
             renderGoogleButton();
@@ -106,27 +121,51 @@
         }
 
         function handleCredentialResponse(response) {
-            // Decode the JWT token to get user info
+            // Decode token untuk mendapatkan maklumat pengguna
             const decodedToken = jwt_decode(response.credential);
+            const userEmail = decodedToken.email;
             
-            // Populate the UI with user data
+            // Masukkan data ke dalam UI
             document.getElementById('user-name').innerText = decodedToken.name;
-            document.getElementById('user-email').innerText = decodedToken.email;
+            document.getElementById('user-email').innerText = userEmail;
             document.getElementById('user-avatar').src = decodedToken.picture;
 
-            // Toggle visibility
+            // Tukar paparan (Sembunyikan login, tunjuk profil)
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('profile-section').classList.remove('hidden');
             document.getElementById('profile-section').classList.add('flex');
+
+            const statusDot = document.getElementById('status-dot');
+
+            // Logik Pengesahan DELIMa
+            if (userEmail.endsWith('@moe-dl.edu.my')) {
+                // --- AKAUN SAH ---
+                statusDot.className = "absolute bottom-0 right-0 w-5 h-5 rounded-full border-2 border-white bg-green-500";
+                
+                document.getElementById('error-message').classList.add('hidden');
+                document.getElementById('success-message').classList.remove('hidden');
+                
+                // Beri masa 1.5 saat untuk pengguna melihat status berjaya, kemudian redirect
+                setTimeout(() => {
+                    window.location.href = DASHBOARD_URL; // Pastikan const DASHBOARD_URL dikemaskini
+                }, 1500);
+
+            } else {
+                // --- AKAUN TIDAK SAH (Cth: @gmail.com) ---
+                statusDot.className = "absolute bottom-0 right-0 w-5 h-5 rounded-full border-2 border-white bg-red-500";
+                
+                document.getElementById('success-message').classList.add('hidden');
+                document.getElementById('error-message').classList.remove('hidden');
+            }
         }
 
         function switchAccount() {
-            // Hide profile, show login
+            // Sembunyikan profil, tunjukkan semula butang login
             document.getElementById('profile-section').classList.add('hidden');
             document.getElementById('profile-section').classList.remove('flex');
             document.getElementById('login-section').classList.remove('hidden');
             
-            // Re-render the button and force the account chooser prompt
+            // Panggil popup 'Account Picker' Google untuk membolehkan penukaran akaun
             google.accounts.id.prompt(); 
         }
     </script>
