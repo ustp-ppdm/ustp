@@ -50,10 +50,10 @@
             <!-- State 1: Bahagian Log Masuk -->
             <div id="login-section" class="flex flex-col items-center transition-all duration-300">
                 
-                <!-- Teks Perhatian Moden (Pulse Animation) -->
+                <!-- Teks Perhatian Moden (Merah + Pulse Animation) -->
                 <div class="text-center text-gray-600 font-medium mb-6">
                     Pilih akaun untuk log masuk.<br>
-                    <span class="inline-block mt-3 px-4 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full font-bold text-sm tracking-wide shadow-sm animate-pulse">
+                    <span class="inline-block mt-3 px-4 py-1.5 bg-red-600 text-white rounded-full font-bold text-sm tracking-wide shadow-md animate-pulse">
                         Guna akaun DELIMa sahaja
                     </span>
                 </div>
@@ -114,7 +114,7 @@
             google.accounts.id.initialize({
                 client_id: GOOGLE_CLIENT_ID,
                 callback: handleCredentialResponse,
-                auto_select: true, // Ditukar ke true untuk auto login
+                auto_select: true, // Auto login
             });
             
             renderGoogleButton();
