@@ -107,13 +107,10 @@
             google.accounts.id.initialize({
                 client_id: GOOGLE_CLIENT_ID,
                 callback: handleCredentialResponse,
-                auto_select: true, // Ditukar ke true untuk auto login
+                auto_select: false,
             });
             
             renderGoogleButton();
-            
-            // Panggil fungsi prompt untuk mencetuskan auto-login jika memenuhi syarat
-            google.accounts.id.prompt();
         };
 
         function renderGoogleButton() {
