@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menukar Akaun Google...</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .loader {
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px auto;
+        }
+        h2 { color: #1f2937; margin-bottom: 8px; }
+        p { color: #6b7280; font-size: 14px; }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            // URL sasaran kembali ke Google Sites anda
+            var targetSite = encodeURIComponent("https://sites.google.com/moe-dl.edu.my/analisis-markah-pentaksiran/pengurusan-ps");
+            
+            // URL rasmi Google Account Chooser
+            var googleAuthUrl = "https://accounts.google.com/AccountChooser?continue=" + targetSite;
+            
+            // Lencongan selepas 0.8 saat untuk memberi ruang animasi dimuat turun
+            setTimeout(function() {
+                window.location.href = googleAuthUrl;
+            }, 800);
+        };
+    </script>
+</head>
+<body>
+    <div>
+        <div class="loader"></div>
+        <h2>Sila Tunggu Sebentar...</h2>
+        <p>Sistem sedang mengalihkan anda ke senarai pilihan akaun Google.</p>
+    </div>
+</body>
+</html>
